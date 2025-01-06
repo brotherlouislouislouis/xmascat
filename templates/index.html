@@ -1,0 +1,213 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Christmas Suggestions</title>
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <style>
+        /* General Styling */
+        body {
+            font-family: 'Arial', sans-serif;
+            background: linear-gradient(to bottom, #ff4d4d, #ff0000);
+            color: white;
+            text-align: center;
+            margin: 0;
+            padding: 0;
+            overflow: hidden;
+        }
+
+        .container {
+            position: relative;
+            height: 100vh;
+            width: 100%;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+        }
+
+        h1 {
+            font-size: 3rem;
+            text-shadow: 2px 2px 5px #000;
+            margin-bottom: 20px;
+        }
+
+        /* Christmas Tree */
+        .tree {
+            position: relative;
+            width: 200px;
+            height: auto;
+        }
+
+        /* Cats Around the Tree */
+        .cat {
+            position: absolute;
+            width: 100px;
+            height: auto;
+        }
+
+        #cat1 {
+            top: 50%;
+            left: 20%;
+            transform: translate(-50%, -50%);
+            animation: bounce 2s infinite alternate;
+        }
+
+        #cat2 {
+            top: 70%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            animation: bounce 3s infinite alternate;
+        }
+
+        #cat3 {
+            top: 50%;
+            left: 80%;
+            transform: translate(-50%, -50%);
+            animation: bounce 2.5s infinite alternate;
+        }
+
+        /* Suggestions */
+        .suggestion {
+            position: absolute;
+            text-align: center;
+            width: 200px;
+            padding: 5px;
+            background: rgba(0, 0, 0, 0.7);
+            border-radius: 10px;
+            font-size: 1rem;
+            animation: glow 2s infinite alternate;
+        }
+
+        #suggestion1 {
+            top: 65%;
+            left: 20%;
+            transform: translate(-50%, 0);
+        }
+
+        #suggestion2 {
+            top: 85%;
+            left: 50%;
+            transform: translate(-50%, 0);
+        }
+
+        #suggestion3 {
+            top: 65%;
+            left: 80%;
+            transform: translate(-50%, 0);
+        }
+
+        /* Input and Button */
+        #relationship {
+            width: 80%;
+            max-width: 400px;
+            padding: 10px;
+            font-size: 1rem;
+            margin-bottom: 10px;
+        }
+
+        #getSuggestions {
+            padding: 10px 20px;
+            font-size: 1rem;
+            background: white;
+            color: #ff0000;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            animation: pulse 2s infinite;
+        }
+
+        /* Flying Sparks */
+        .spark {
+            position: absolute;
+            width: 30px;
+            height: auto;
+            animation: fly 5s infinite linear;
+        }
+
+        /* Animations */
+        @keyframes bounce {
+            0% { transform: translate(-50%, -50%) scale(1); }
+            100% { transform: translate(-50%, -45%) scale(1.1); }
+        }
+
+        @keyframes glow {
+            0% { box-shadow: 0 0 10px #fff; }
+            100% { box-shadow: 0 0 20px #ff0; }
+        }
+
+        @keyframes pulse {
+            0% { transform: scale(1); }
+            100% { transform: scale(1.1); }
+        }
+
+        @keyframes fly {
+            0% { top: 100%; left: 50%; transform: translateX(0) rotate(0deg); }
+            100% { top: -10%; left: 10%; transform: translateX(-100px) rotate(360deg); }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🎄 Christmas Suggestions 🎄</h1>
+
+        <input type="text" id="relationship" placeholder="Enter relationship (e.g., friend, sibling)">
+        <button id="getSuggestions">Get Suggestions</button>
+
+        <!-- Christmas Tree -->
+        <img src="/static/xTree.png" class="tree" alt="Christmas Tree">
+
+        <!-- Cats -->
+        <img src="/static/cat1.png" id="cat1" class="cat" alt="Cat 1">
+        <img src="/static/cat2.png" id="cat2" class="cat" alt="Cat 2">
+        <img src="/static/cat3.png" id="cat3" class="cat" alt="Cat 3">
+
+        <!-- Suggestions -->
+        <div id="suggestion1" class="suggestion">What to do...</div>
+        <div id="suggestion2" class="suggestion">What to gift...</div>
+        <div id="suggestion3" class="suggestion">What to say...</div>
+    </div>
+
+    <!-- Flying Sparks -->
+    <script>
+        for (let i = 1; i <= 18; i++) {
+            const spark = document.createElement('img');
+            spark.src = `/static/x (${i}).png`;
+            spark.className = 'spark';
+            spark.style.top = `${Math.random() * 100}vh`;
+            spark.style.left = `${Math.random() * 100}vw`;
+            spark.style.animationDuration = `${Math.random() * 3 + 5}s`;
+            document.body.appendChild(spark);
+        }
+    </script>
+
+    <script>
+        $(document).ready(function () {
+            $('#getSuggestions').click(function () {
+                const relationship = $('#relationship').val();
+
+                if (!relationship) {
+                    alert('Please enter a relationship!');
+                    return;
+                }
+
+                $.ajax({
+                    url: '/get_suggestions',
+                    type: 'POST',
+                    contentType: 'application/json',
+                    data: JSON.stringify({ relationship }),
+                    success: function (response) {
+                        $('#suggestion1').text(response.suggestions[0]);
+                        $('#suggestion2').text(response.suggestions[1]);
+                        $('#suggestion3').text(response.suggestions[2]);
+                    },
+                    error: function () {
+                        alert('Error occurred while fetching suggestions.');
+                    }
+                });
+            });
+        });
+    </script>
+</body>
+</html>
